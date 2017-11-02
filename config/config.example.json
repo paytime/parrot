@@ -1,6 +1,7 @@
 {
     "token" : "DISCORD_BOT_TOKEN",
     "prefix" : "!",
+    "userPrefix" : "?",
     "organisation" : "My organisation",
     "twitter" : {
         "consumer_key" : "YOUR_CONSUMER_KEY",  

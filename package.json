@@ -1,0 +1,19 @@
+{
+  "name": "parrot",
+  "version": "1.0.0",
+  "description": "A discord bot for creating & sharing tweets!",
+  "main": "parrot.js",
+  "scripts": {
+    "start": "node parrot.js",
+    "stop": "killall -SIGINT parrot"
+  },
+  "author": "Paytime",
+  "license": "MIT",
+  "dependencies": {
+    "dateformat": "^3.0.2",
+    "discord.js": "^11.2.1",
+    "fs": "0.0.1-security",
+    "request": "^2.83.0",
+    "twitter": "^1.7.1"
+  }
+}

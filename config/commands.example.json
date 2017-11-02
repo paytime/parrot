@@ -1,0 +1,7 @@
+{
+    "ping" : {
+        "keywords" : ["ping"],
+        "title" : "Pong!",
+        "description" : "I'm ready!"
+    }
+}

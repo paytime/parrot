@@ -1,0 +1,64 @@
+{
+    "ready" : "I am ready!",
+    "copyright" : "© Powered by Parrot",
+    "commands" : {
+        "greet" : ["hi", "hello", "greet", "greetings", "sup", "yo"],
+        "help" : ["help", "commands", "info"],
+        "tweet" : ["tweet", "announce", "ann", "qtweet", "qannounce", "qann"],
+        "ask" : ["ask", "play"]
+    },
+    "magic8ball" : [
+        "It is certain",
+        "It is decidedly so",
+        "Without a doubt",
+        "Yes definitely",
+        "You may rely on it",
+        "As I see it, yes",
+        "Most likely",
+        "Outlook good",
+        "Yes",
+        "Signs point to yes",
+        "Reply hazy try again",
+        "Ask again later",
+        "Better not tell you now",
+        "Cannot predict now",
+        "Concentrate and ask again",
+        "Don't count on it",
+        "My reply is no",
+        "My sources say no",
+        "Outlook not so good",
+        "Very doubtful"
+    ],
+    "greetings" : [
+        "Good day, {user}! How may I be of assistance? :bird:",
+        "Greetings {user}! I am {bot}! :grinning:",
+        "*making parrot sounds* {user} :bird:"
+    ],
+    "tweet" : {
+        "getTweet" : "get",
+        "getLatestTweet" : "latest",
+        "sharingTweet" : ":bird: Sharing tweet: ",
+        "tag" : "@here",
+        "success" : ":bird: Tweeting... Link: ",
+        "error" : "I couldn't tweet! :sob:",
+        "emptyError" : "Cannot tweet nothing! :thinking:",
+        "invalidLink" : "The twitter link is invalid!"
+    },
+    "settings": {
+        "title" : "Information",
+        "description" : "Settings can be changed in the `config.json` file.\nType `!help <command>` to get the information on how to use the command.",
+        "allowedRoles" : "Allowed roles",
+        "log" : "Log",
+        "banned" : "Word filter",
+        "enabled" : "Enabled",
+        "disabled" : "Disabled",
+        "commands" : "List of Commands"
+    },
+    "commandsHelp" : {
+        "helpNotFound" : "Couldn't find any info for this command! :sob:",
+        "help" : "Display all settings, commands & info with `!help`",
+        "tweet" : "You can write a tweet: `!announce This is a tweet! :bird:`\r\nShare the latest tweet to all announcement channels: `!ann latest`\r\nShare a specific tweet: `!tweet get <linkToTheTweet>`",
+        "ask" : "Ask {bot} whatever you want and he'll answer: `!ask Will I ever be the PVP King?`",
+        "greet" : "Greets {bot}. No arguments required."
+    }
+}

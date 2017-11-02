@@ -1,6 +1,7 @@
 {
     "token" : "DISCORD_BOT_TOKEN",
     "prefix" : "!",
+    "organisation" : "My organisation",
     "twitter" : {
         "consumer_key" : "YOUR_CONSUMER_KEY",  
         "consumer_secret" : "YOUR_CONSUMER_SECRET",
@@ -8,16 +9,13 @@
         "access_token_secret" : "YOUR_ACCESS_TOKEN_SECRET",
         "channels" : ["CHANNEL_ID_1"]
     },
-    "allowedRoles" : ["Role_1", "Role_2"],
-    "logging" : true,
-    "funChannels" : [
-        "CHANNEL_ID_1"
-    ],
-    "banned" : {
+    "moderators" : ["Role_1", "Role_2"],
+    "log" : {
+        "fileLog" : true,
+        "channels" : ["LOG_CHANNEL_ID_1"]
+    },
+    "blacklist" : {
         "active" : false,
-        "words" : [
-            "PLACE_BANNED_WORDS_HERE"            
-        ],
         "unmoderatedChannels" : [
             "CHANNEL_ID_1"
         ]

@@ -46,7 +46,7 @@ bot.on("message", (message) => {
 
   if ((dict.commands.greet.indexOf(command) >= 0)) { // Parrot greets the user
     var randomNumber = Math.floor(Math.random()*dict.greetings.length);
-    sendMessage(dict.greetings[randomNumber].replace("{user}", "<@" + message.author.id + ">").replace("{bot}", bot.user.username));
+    sendMessage(dict.greetings[randomNumber]);
   } else if ((dict.commands.ask.indexOf(command) >= 0) && (args.length > 3))  { // Plays magic 8 ball
     var randomNumber = Math.floor(Math.random() * dict.magic8ball.length);
     sendMessage("<@" + message.author.id + "> " + dict.magic8ball[randomNumber]);
@@ -64,7 +64,7 @@ bot.on("message", (message) => {
     if (args.isEmpty()) {
       sendMessage(
         {
-          content: "<@" + message.author.id + "> | " + dict.copyright + " <https://github.com/paytime/parrot>",
+          content: "{user} | " + dict.copyright + " <https://github.com/paytime/parrot>",
           embed: {
             title: dict.settings.title,
             description: dict.settings.description,
@@ -279,10 +279,11 @@ bot.on("message", (message) => {
    */
   function sendMessage(text, hasExtraContent = false) {    
     message.channel.startTyping();
+
     if(hasExtraContent) {
-      message.channel.send(text.content, text).catch((err) => catchError(err));
+      message.channel.send(text.content.replace("{user}", "<@" + message.author.id + ">").replace("{bot}", bot.user.username), text).catch((err) => catchError(err));
     } else {
-      message.channel.send(text).catch((err) => catchError(err));
+      message.channel.send(text.replace("{user}", "<@" + message.author.id + ">").replace("{bot}", bot.user.username)).catch((err) => catchError(err));
     }
     message.channel.stopTyping();
 

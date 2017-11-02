@@ -1,6 +1,6 @@
 {
   "name": "parrot",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A discord bot for creating & sharing tweets!",
   "main": "parrot.js",
   "scripts": {

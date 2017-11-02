@@ -3,7 +3,8 @@
     "copyright" : "© Powered by Parrot",
     "commands" : {
         "greet" : ["hi", "hello", "greet", "greetings", "sup", "yo"],
-        "help" : ["help", "commands", "info"],
+        "help" : ["help", "info"],
+        "cmd" : ["cmd", "commands"],
         "tweet" : ["tweet", "announce", "ann", "qtweet", "qannounce", "qann"],
         "ask" : ["ask", "play"]
     },
@@ -44,21 +45,32 @@
         "emptyError" : "Cannot tweet nothing! :thinking:",
         "invalidLink" : "The twitter link is invalid!"
     },
+    "userCommands" : {
+        "create" : "create",
+        "remove" : "remove",
+        "invalid" : "Invalid arguments. Type `!help cmd`.",
+        "success" : "Command was successfully created.",
+        "successDel" : "Command was successfully removed.",
+        "error" : "Couldn't create command! Use unique names. No spaces and special characters are allowed!",
+        "errorDel" : "Couldn't find command!"
+    },
     "settings": {
         "title" : "Information",
         "description" : "Settings can be changed in the `config.json` file.\nType `!help <command>` to get the information on how to use the command.",
-        "allowedRoles" : "Allowed roles",
+        "moderators" : "Moderators",
         "log" : "Log",
         "banned" : "Word filter",
         "enabled" : "Enabled",
         "disabled" : "Disabled",
-        "commands" : "List of Commands"
+        "commands" : "List of Commands",
+        "userCommands" : "List of User-Created Commands"
     },
     "commandsHelp" : {
-        "helpNotFound" : "Couldn't find any info for this command! :sob:",
-        "help" : "Display all settings, commands & info with `!help`",
-        "tweet" : "You can write a tweet: `!announce This is a tweet! :bird:`\r\nShare the latest tweet to all announcement channels: `!ann latest`\r\nShare a specific tweet: `!tweet get <linkToTheTweet>`",
-        "ask" : "Ask {bot} whatever you want and he'll answer: `!ask Will I ever be the PVP King?`",
-        "greet" : "Greets {bot}. No arguments required."
+        "helpNotFound" : "{user} Couldn't find any info for this command! :sob:",
+        "help" : "{user} Display all settings, commands & info with `!help`",
+        "tweet" : "{user} You can write a tweet: `!announce This is a tweet! :bird:`\r\nShare the latest tweet to all announcement channels: `!ann latest`\r\nShare a specific tweet: `!tweet get <linkToTheTweet>` | **Requires Moderator!**",
+        "ask" : "{user} Ask {bot} whatever you want and he'll answer: `!ask Will I ever be the PVP King?`",
+        "greet" : "{user} Greets {bot}. No arguments required.",
+        "cmd" : "{user} `!cmd` handles user-created commands. `!cmd create <command>|<title>|<some text>` creates a new command. Example: `!cmd create dog|Dog|Cats are the best!` will create a command `?dog`. Use `!cmd delete <command>` to remove an user-created command. | **Requires Moderator!**"
     }
 }

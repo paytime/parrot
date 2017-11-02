@@ -8,7 +8,7 @@ const dateFormat = require("dateformat");
 const request = require('request').defaults({ encoding: null });
 
 const blacklist = require("./config/blacklist.json");
-const commands = require("./config/commands.json");
+var userCommands = require("./config/commands.json");
 
 process.title = "parrot";
 
@@ -26,9 +26,10 @@ bot.on("message", (message) => {
 
   var isAllowed = message.member.roles.some(r=>config.moderators.includes(r.name));
 
+  // User used blacklisted words in a moderated channel
   if(config.blacklist.active && !isAllowed &&
     (config.blacklist.unmoderatedChannels.indexOf(message.channel.id) < 0) &&
-    blacklist.some(word => message.content.includes(word))) { // User used blacklisted words in a moderated channel
+    blacklist.some(word => message.content.includes(word))) {
       message.delete(100)
         .then(() => {
           logActivity(new Date(message.createdTimestamp), message.channel.name, message.guild.name, "Removed message from " + message.member.displayName, message.content); 
@@ -39,7 +40,27 @@ bot.on("message", (message) => {
     return;
   }
 
-  if (!message.content.startsWith(config.prefix)) return;
+  // User launched a user-created command!
+  if (message.content.startsWith(config.userPrefix)) {
+    const command = message.content.slice(config.userPrefix.length).trim().split(/ +/g).shift().toLowerCase();
+    userCommands.forEach(function(cmd) {
+      if(cmd.command == command) {
+        sendMessage({
+          content: "{user}",
+          embed: {
+            title: cmd.title,
+            description: cmd.desc,
+            footer: {
+              text: footer()
+            }
+          }
+        }, true);
+      }
+    }, this);
+    return;
+  }
+
+  if (!message.content.startsWith(config.prefix)) return; // User didn't use prefix: ignore
 
   const command = message.content.slice(config.prefix.length).trim().split(/ +/g).shift().toLowerCase();
   const args = message.content.slice(config.prefix.length + command.length).trim();
@@ -50,17 +71,30 @@ bot.on("message", (message) => {
   } else if ((dict.commands.ask.indexOf(command) >= 0) && (args.length > 3))  { // Plays magic 8 ball
     var randomNumber = Math.floor(Math.random() * dict.magic8ball.length);
     sendMessage("<@" + message.author.id + "> " + dict.magic8ball[randomNumber]);
-  } else if ((dict.commands.tweet.indexOf(command) >= 0) && isAllowed) {
+  } else if ((dict.commands.tweet.indexOf(command) >= 0) && isAllowed) { // Tweet and/or share
     handleAnnouncement();
     logActivity(new Date(message.createdTimestamp), message.channel.name, message.guild.name, message.member.displayName, message.content);      
-  } else if (dict.commands.help.indexOf(command) >= 0) {
+  } else if (dict.commands.help.indexOf(command) >= 0) { // Get Help
     displayHelp();
+  } else if ((dict.commands.cmd.indexOf(command) >= 0) && isAllowed) { // Handle user-create commands
+    handleUserCommands();
+    logActivity(new Date(message.createdTimestamp), message.channel.name, message.guild.name, message.member.displayName, message.content); 
   }
 
   /**
    * Displays all info & commands
    */
   function displayHelp() {
+    var usercmdHelp = "*None*";
+
+    userCommands.forEach(function(cmd) {
+      if (usercmdHelp == "*None*") {
+        usercmdHelp = cmd.command;
+      } else {
+        usercmdHelp += "," + cmd.command;
+      }
+    }, this);
+
     if (args.isEmpty()) {
       sendMessage(
         {
@@ -83,12 +117,16 @@ bot.on("message", (message) => {
                 inline: true
               },
               {
-                name: dict.settings.allowedRoles,
+                name: dict.settings.moderators,
                 value: config.moderators.toString()
               },
               {
                 name: dict.settings.commands,
-                value: dict.commands.help.toString() + "\r\n" + dict.commands.greet.toString() + "\r\n" + dict.commands.tweet.toString() + "\r\n" + dict.commands.ask.toString()
+                value: dict.commands.help.toString() + "\r\n" + dict.commands.greet.toString() + "\r\n" + dict.commands.tweet.toString() + "\r\n" + dict.commands.ask.toString() + dict.commands.cmd.toString() + "\r\n"
+              },
+              {
+                name: dict.settings.userCommands,
+                value: usercmdHelp
               }
             ]
           }
@@ -104,9 +142,80 @@ bot.on("message", (message) => {
         sendMessage(dict.commandsHelp.help);
       } else if (dict.commands.tweet.indexOf(mainArg) >= 0) {
         sendMessage(dict.commandsHelp.tweet);
+      } else if (dict.commands.cmd.indexOf(mainArg) >= 0) {
+        sendMessage(dict.commandsHelp.cmd);
       } else {
-        sendMessage("<@" + message.author.id + "> " + dict.commandsHelp.helpNotFound);
+        sendMessage(dict.commandsHelp.helpNotFound);
       }
+    }
+  }
+
+  /**
+   * Handles user-created commands
+   */
+  function handleUserCommands() {
+    switch (args.toLowerCase().split(/ +/g).shift().toLowerCase()) {
+      case dict.userCommands.create:
+        createCommand();
+        break;
+      case dict.userCommands.remove:
+        removeCommand();
+        break;
+      default:
+        sendMessage(dict.userCommands.invalid);
+        break;
+    }
+
+    function createCommand() {
+      var content = args.slice(dict.userCommands.create.length).trim().split("|").filter(entry => !entry.isEmpty());   
+
+      if ((content.length != 3) || !/^[a-z0-9_.-]*$/.test(content[0].toLowerCase()) || (commandPosition(content[0].toLowerCase()) != -1)) {
+        sendMessage(dict.userCommands.error);
+        return;
+      }
+
+      userCommands.push({
+        "command" : content[0].toLowerCase(),
+        "title" : content[1],
+        "desc" : content[2]
+      });
+
+      fs.writeFile("config/commands.json", JSON.stringify(userCommands), function(err) {
+        if(err) {
+            return console.log(err);
+        }
+      });
+
+      userCommands = require("./config/commands.json");
+      sendMessage(dict.userCommands.success);
+    }
+
+    function removeCommand() {
+      var pos = commandPosition(args.slice(dict.userCommands.remove.length).trim().toLowerCase());
+
+      if(pos != -1) {
+        userCommands.splice(pos, 1);
+
+        fs.writeFile("config/commands.json", JSON.stringify(userCommands), function(err) {
+          if(err) {
+              return console.log(err);
+          }
+        });
+  
+        userCommands = require("./config/commands.json");
+        sendMessage(dict.userCommands.successDel);
+      } else {
+        sendMessage(dict.userCommands.errorDel);
+      }
+    }
+
+    function commandPosition(checkCmd) {
+      for (var i = 0; i < userCommands.length; i++) {
+        if(userCommands[i].command === checkCmd) {
+          return i;
+        }
+      }
+      return -1;
     }
   }
 

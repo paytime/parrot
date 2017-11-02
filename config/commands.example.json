@@ -1,7 +1,7 @@
-{
-    "ping" : {
-        "keywords" : ["ping"],
-        "title" : "Pong!",
-        "description" : "I'm ready!"
+[
+    {
+        "command" : "dog",
+        "title" : "Cats & Dogs",
+        "desc" : "Cats are the best!"
     }
-}
+]

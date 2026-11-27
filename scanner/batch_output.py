@@ -33,7 +33,15 @@ def _load_tg_env():
     import pathlib
     for cand in ("/root/loot_dash/.tg.env", "./.tg.env"):
         p = pathlib.Path(cand)
-        if p.is_file():
+        # is_file() raises PermissionError (not returns False) when the process is
+        # not root and the path sits in a 0700 directory - which killed every run
+        # on a non-root sandbox (measured on YorkHost, running as `agent`).
+        try:
+            if not p.is_file():
+                continue
+        except OSError:
+            continue
+        if True:
             env = {}
             for line in p.read_text(encoding="utf-8").splitlines():
                 line = line.strip()

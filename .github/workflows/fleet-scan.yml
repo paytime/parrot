@@ -1,0 +1,36 @@
+name: fleet-scan
+on:
+  push:
+    paths: ['.github/workflows/fleet-scan.yml']
+  workflow_dispatch:
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: deps
+        run: pip install --quiet aiohttp jsmin requests aiodns
+      - name: scan
+        run: |
+          echo "runner: $(nproc) vCPU / $(free -m | awk '/Mem:/{print $2}') MB"
+          cd scanner
+          python3 batch_output.py --list targets.txt --js fast_recon.js             --output out --concurrency 100 --timeout 5 2>&1 | tail -30
+      - name: collect
+        if: always()
+        run: |
+          mkdir -p results
+          # the scanner writes out_<timestamp>/ directly in CWD (the --output value
+          # is a PREFIX, not a directory). Copying scanner/out/* matched nothing and
+          # produced empty artifacts on every run.
+          cp -r scanner/out_* results/ 2>/dev/null || true
+          cp -r scanner/out results/ 2>/dev/null || true
+          echo "result files: $(find results -type f | wc -l)"
+          find results -type f -size +0 | head -20
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: scan-results
+          path: results/
+          retention-days: 1
+# nonce: 1795762019.9394882

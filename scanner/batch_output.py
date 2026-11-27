@@ -638,6 +638,12 @@ async def run_batch_scan(targets: list[str], options: dict, output_dir: str,
     print("\n[*] Analyzing results...")
     critical_findings = []
     
+    # A batch where every target failed writes no files, so output_dir never gets
+    # created - and the plain os.listdir() below then dies with FileNotFoundError,
+    # turning a legitimate 100%-dead batch into a hard scanner failure. Dead names are
+    # ~41% of fresh supply, so this is a routine case, not an edge case.
+    if not os.path.isdir(output_dir):
+        os.makedirs(output_dir, exist_ok=True)
     for filename in os.listdir(output_dir):
         if filename.startswith('_') or not filename.endswith('.json'):
             continue
